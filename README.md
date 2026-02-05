@@ -1,8 +1,6 @@
-# 🚀 TaskBoard Pro — Serverless Backend
 ---
-
+# 🚀 TaskBoard Pro — Serverless Backend
 Production-ready Serverless backend for TaskBoard Pro built using **AWS Lambda, API Gateway, DynamoDB, Cognito, S3, and Redis (ElastiCache Serverless)**.
-
 ---
 
 ## 🧠 Architecture Overview
