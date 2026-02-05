@@ -1,0 +1,27 @@
+service: taskboard-pro-offline
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: eu-north-1
+  timeout: 30
+  environment:
+    REDIS_HOST: 127.0.0.1
+
+plugins:
+  - serverless-offline
+
+functions:
+  listTasks:
+    handler: src/tasks/listTasks.listTasks
+    events:
+      - http:
+          path: tasks
+          method: get
+
+  createTask:
+    handler: src/tasks/createTask.createTask
+    events:
+      - http:
+          path: tasks
+          method: post

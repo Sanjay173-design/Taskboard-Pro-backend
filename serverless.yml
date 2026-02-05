@@ -1,0 +1,205 @@
+service: taskboard-pro
+
+plugins:
+  - serverless-offline
+
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: eu-north-1
+
+  vpc:
+    securityGroupIds:
+      - sg-0e3a5dae71cde1372
+    subnetIds:
+      - subnet-063d89b3b8324ac1b
+      - subnet-02b7ebba9601e9887
+
+  environment:
+    REDIS_HOST: taskboard-redis-ctrbve.serverless.eun1.cache.amazonaws.com
+    REDIS_PORT: "6379"
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - arn:aws:dynamodb:*:*:table/Workspaces
+        - arn:aws:dynamodb:*:*:table/Projects
+        - arn:aws:dynamodb:*:*:table/Tasks
+        - arn:aws:dynamodb:*:*:table/TaskComments
+        - arn:aws:dynamodb:*:*:table/TaskActivity
+        - arn:aws:dynamodb:*:*:table/TaskAttachments
+
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+        - s3:DeleteObject
+        - s3:ListBucket
+      Resource:
+        - arn:aws:s3:::taskboard-attachments-yourname
+        - arn:aws:s3:::taskboard-attachments-yourname/*
+
+  httpApi:
+    cors:
+      allowedOrigins:
+        - http://localhost:5173
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+      allowedMethods:
+        - GET
+        - POST
+        - PATCH
+        - DELETE
+        - OPTIONS
+      allowCredentials: false
+    authorizers:
+      cognitoAuth:
+        type: jwt
+        identitySource: $request.header.Authorization
+        issuerUrl: https://cognito-idp.eu-north-1.amazonaws.com/eu-north-1_IdHj0ilBi
+        audience:
+          - 11d6597is2fnllkpn7e56kiqtv
+
+functions:
+  health:
+    handler: src/health.health
+    events:
+      - httpApi:
+          path: /health
+          method: get
+
+  createWorkspace:
+    handler: src/workspaces/createWorkspace.createWorkspace
+    events:
+      - httpApi:
+          path: /workspaces
+          method: post
+          authorizer:
+            name: cognitoAuth
+
+  listWorkspaces:
+    handler: src/workspaces/listWorkspaces.listWorkspaces
+    events:
+      - httpApi:
+          path: /workspaces
+          method: get
+          authorizer:
+            name: cognitoAuth
+
+  createProject:
+    handler: src/projects/createProject.createProject
+    events:
+      - httpApi:
+          path: /projects
+          method: post
+          authorizer:
+            name: cognitoAuth
+
+  listProjects:
+    handler: src/projects/listProjects.listProjects
+    events:
+      - httpApi:
+          path: /projects
+          method: get
+          authorizer:
+            name: cognitoAuth
+
+  createTask:
+    handler: src/tasks/createTask.createTask
+    events:
+      - httpApi:
+          path: /tasks
+          method: post
+          authorizer:
+            name: cognitoAuth
+
+  listTasks:
+    handler: src/tasks/listTasks.listTasks
+    timeout: 15
+    events:
+      - httpApi:
+          path: /tasks
+          method: get
+          authorizer:
+            name: cognitoAuth
+
+  updateTaskStatus:
+    handler: src/tasks/updateTaskStatus.updateTaskStatus
+    events:
+      - httpApi:
+          path: /tasks/{taskId}
+          method: patch
+          authorizer:
+            name: cognitoAuth
+
+  addComment:
+    handler: src/comments/addComment.addComment
+    events:
+      - httpApi:
+          path: /tasks/comments
+          method: post
+          authorizer:
+            name: cognitoAuth
+
+  listComments:
+    handler: src/comments/listComments.listComments
+    events:
+      - httpApi:
+          path: /tasks/comments
+          method: get
+          authorizer:
+            name: cognitoAuth
+
+  listActivity:
+    handler: src/activity/listActivity.listActivity
+    events:
+      - httpApi:
+          path: /tasks/activity
+          method: get
+          authorizer:
+            name: cognitoAuth
+
+  getUploadUrl:
+    handler: src/attachments/getUploadUrl.getUploadUrl
+    events:
+      - httpApi:
+          path: /tasks/attachments/upload-url
+          method: post
+          authorizer:
+            name: cognitoAuth
+
+  listAttachments:
+    handler: src/attachments/listAttachments.listAttachments
+    events:
+      - httpApi:
+          path: /tasks/attachments
+          method: get
+          authorizer:
+            name: cognitoAuth
+
+  getDownloadUrl:
+    handler: src/attachments/getDownloadUrl.getDownloadUrl
+    events:
+      - httpApi:
+          path: /tasks/attachments/download-url
+          method: get
+          authorizer:
+            name: cognitoAuth
+
+  deleteAttachment:
+    handler: src/attachments/deleteAttachment.deleteAttachment
+    events:
+      - httpApi:
+          path: /tasks/attachments
+          method: delete
+          authorizer:
+            name: cognitoAuth
