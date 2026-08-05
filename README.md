@@ -1,10 +1,10 @@
-# 🚀 TaskBoard Pro — Serverless Backend
+# TaskBoard Pro — Serverless Backend
 
 Production-ready Serverless backend for TaskBoard Pro built using **AWS Lambda, API Gateway, DynamoDB, Cognito, S3, and Redis (ElastiCache Serverless)**.
 
 ---
 
-## 🧠 Architecture Overview
+## Architecture Overview
 
 React Frontend (Vercel)
 ↓
@@ -19,7 +19,7 @@ Cognito JWT Authentication
 
 ---
 
-## 🔐 Security
+## Security
 
 - AWS Cognito JWT Authorizer
 - IAM Least Privilege Roles
@@ -30,29 +30,29 @@ Cognito JWT Authentication
 
 ---
 
-## 🧩 Features
+## Features
 
-### 👤 Authentication
+### Authentication
 - Cognito User Pool JWT validation
 - Secure per-user data isolation
 
 ---
 
-### 📁 Workspaces
+### Workspaces
 - Create workspace
 - List user workspaces
 - Redis caching (read optimization)
 
 ---
 
-### 📂 Projects
+### Projects
 - Create project
 - List projects per workspace
 - Redis cache + invalidation on create
 
 ---
 
-### ✅ Tasks
+### Tasks
 - Create task
 - List tasks per project
 - Update task status
@@ -61,13 +61,13 @@ Cognito JWT Authentication
 
 ---
 
-### 💬 Comments
+### Comments
 - Add comment
 - List task comments
 
 ---
 
-### 📎 Attachments (S3)
+### Attachments (S3)
 - Presigned upload URL
 - Presigned download URL
 - Delete attachment
@@ -75,14 +75,14 @@ Cognito JWT Authentication
 
 ---
 
-### 📊 Activity Tracking
+### Activity Tracking
 - Task status changes
 - Attachment events
 - Comment activity
 
 ---
 
-## 🏗️ Tech Stack
+## Tech Stack
 
 | Layer | Tech |
 |---|---|
@@ -98,7 +98,7 @@ SDK | AWS SDK v3 |
 
 ---
 
-### 📦 📊 Database Tables
+### Database Tables
 ## Workspaces
 - workspaceId (PK)
 - ownerId
@@ -139,7 +139,7 @@ createdAt
 - ownerId
 - createdAt
 
-## ⚡ Redis Cache Strategy
+## Redis Cache Strategy
 - Endpoint	      Cache
 - List Workspaces	Cached
 - List Projects	  Cached
@@ -151,7 +151,7 @@ createdAt
 - Create Task → invalidate task cache
 - Update Task → invalidate task cache
 
- ## 🧠 Production Engineering Decisions
+ ## Production Engineering Decisions
 - VPC attached Lambda
 - No NAT → Using VPC Endpoints
 - Redis TLS enabled
@@ -159,14 +159,14 @@ createdAt
 - Optimistic UI sync supported
 - Cache fallback to DB
 
-## 🎯 Performance Optimizations
+## Performance Optimizations
 - Redis read-through caching
 - Cache TTL = 60s
 - DynamoDB filtered scan per user
 - Lambda connection reuse
 - callbackWaitsForEmptyEventLoop disabled
 
-## 🔮 Future Improvements
+## Future Improvements
 - WebSocket realtime updates
 - DynamoDB GSIs for query optimization
 - Background job queue
